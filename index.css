@@ -14,7 +14,7 @@
 #state-borders {
     fill: none;
     stroke: #212227; /* BOUNDARIES */
-    stroke-width: 1px;
+    stroke-width: 2px;
     stroke-linejoin: round;
     stroke-linecap: round;
     pointer-events: none;
@@ -23,7 +23,7 @@
 .county-boundary {
     fill: #8693AB; /* NON-SELECTED */
     stroke: #212227; /* BOUNDARIES */
-    stroke-width: .25px;
+    stroke-width: 1px;
 }
 
 .nation {

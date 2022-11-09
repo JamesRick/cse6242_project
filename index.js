@@ -8,15 +8,20 @@ var margin = {
     width = width - margin.left - margin.right,
     mapRatio = 0.5,
     height = width * mapRatio,
-    active = d3.select(null), 
-	zoomDuration = 1000;
+    zoomDuration = 1000;
 
-var projection = d3
-    .geoAlbersUsa()
-    .translate([width / 2, height / 2])
-    .scale(width);
+var projection = d3.geoAlbers().translate([0, 0]).scale(1).rotate([90, 0, 0]);
 
 var path = d3.geoPath().projection(projection);
+
+var zoom = d3
+    .zoom()
+    .translateExtent([
+        [0, 0],
+        [width, height],
+    ])
+    .scaleExtent([1, 10])
+    .on("zoom", () => g.attr("transform", d3.event.transform));
 
 var svg = d3
     .select(".viz")
@@ -28,84 +33,51 @@ var svg = d3
 svg.append("rect")
     .attr("class", "background center-container")
     .attr("height", height + margin.top + margin.bottom)
-    .attr("width", width + margin.left + margin.right)
-    .on("click", onClick);
+    .attr("width", width + margin.left + margin.right);
 
 var g = svg
     .append("g")
     .attr("class", "center-container center-items us-state")
     .attr("transform", `translate(${margin.left},${margin.top})`)
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
+    .attr("height", height + margin.top + margin.bottom)
+    .call(zoom)
+    .on("dblclick.zoom", null);
 
-Promise.all([d3.json("us-topo.json")]).then(([us]) => {
+Promise.all([
+    d3.json("maps/us-topo.json"),
+    d3.json("maps/GA-13-georgia-counties.json"),
+]).then(([us, georgia]) => {
+    state = topojson
+        .feature(us, us.objects.states)
+        .features.filter((f) => f.properties.name === "Georgia")[0];
+
+    var b = path.bounds(state),
+        s =
+            1 /
+            Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+        t = [
+            (width - s * (b[1][0] + b[0][0])) / 2,
+            (height - s * (b[1][1] + b[0][1])) / 2,
+        ];
+
+    projection.scale(s).translate(t);
+
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
-        .data(topojson.feature(us, us.objects.counties).features)
+        .data(topojson.feature(georgia, georgia.objects.counties).features)
         .enter()
         .append("path")
         .attr("d", path)
-        .attr("class", "county-boundary");
+        .attr("class", "county-boundary")
+		.on("click", d => console.log(d.properties.NAME))
 
     g.append("g")
-        .attr("id", "states")
+        .attr("id", "state-borders")
         .selectAll("path")
-        .data(topojson.feature(us, us.objects.states).features)
+        .data([state])
         .enter()
         .append("path")
-        .attr("d", path)
-        .attr("class", "state")
-        .on("click", onClick);
-
-    g.append("path")
-        .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
-        .attr("id", "state-borders")
-        .attr("d", path);
-
-    g.append("path")
-        .data(topojson.feature(us, us.objects.nation).features)
-        .attr("class", "nation")
         .attr("d", path);
 });
-
-d3.select("body").on("keydown", () => {
-    if (d3.event.key === "Escape") {
-        zoomOut();
-    }
-});
-
-function onClick(d) {
-    if (d3.select(".background").node() === this || active.node() === this) {
-        zoomOut();
-        return;
-    }
-
-    // if () return zoomOut();
-
-    active.classed("active", false);
-    active = d3.select(this).classed("active", true);
-
-    var bounds = path.bounds(d),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = 0.9 / Math.max(dx / width, dy / height),
-        translate = [width / 2 - scale * x, height / 2 - scale * y];
-
-    g.transition()
-        .duration(zoomDuration)
-        .style("stroke-width", `${1.5 / scale}px`)
-        .attr("transform", `translate(${translate})scale(${scale})`);
-}
-
-function zoomOut() {
-    active.classed("active", false);
-    active = d3.select(null);
-
-    g.transition()
-        .delay(100)
-        .duration(zoomDuration)
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-}
