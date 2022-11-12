@@ -10,6 +10,13 @@ var margin = {
     height = width * mapRatio,
     zoomDuration = 1000;
 
+const LOG_LEVEL = "RELEASE";
+
+var county_csv_path = "zillow_data/ga/all_sm_sa_month/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
+const date_re = new RegExp('[0-9]+\-[0-9]+\-[0-9]+');
+const date_parser = d3.timeParse("%Y-%m-%d")
+const seconds_per_day = 60*60*24
+
 var projection = d3.geoAlbers().translate([0, 0]).scale(1).rotate([90, 0, 0]);
 
 var path = d3.geoPath().projection(projection);
@@ -43,11 +50,6 @@ var g = svg
     .attr("height", height + margin.top + margin.bottom)
     .call(zoom)
     .on("dblclick.zoom", null);
-
-var county_csv_path = "zillow_data/ga/all_sm_sa_month/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
-const date_re = new RegExp('[0-9]+\-[0-9]+\-[0-9]+');
-const date_parser = d3.timeParse("%Y-%m-%d")
-const seconds_per_day = 60*60*24
 
 /**
  * TODO: Need to format slider with appropriate colors and style.
@@ -116,8 +118,11 @@ Promise.all([
         return date.getMonth() === 0;
     });
     const default_date = d3.max(date_entries)
-    console.log(date_entries)
-    console.log(default_date)
+
+    if (LOG_LEVEL == "DEBUG") {
+        console.log(date_entries);
+        console.log(default_date);
+    }
 
     var date_slider = d3.sliderBottom()
         .marks(date_entries)
@@ -125,7 +130,7 @@ Promise.all([
         .max(d3.max(date_entries))
         .width(width/2)
         .tickFormat(d3.timeFormat('%Y-%m-%d'))
-        .tickValues(tick_values)
+        // .tickValues(tick_values)
         .default(default_date)
         .on('onchange', val => {
             d3.select('p#value-time')
@@ -138,6 +143,8 @@ Promise.all([
         .attr("dx", `-.05em`)
         .attr("dy", `.08em`)
         .attr("transform", `rotate(-45)`);
+
+    d3.select('p#value-time').text(d3.timeFormat('%Y')(date_slider.value()));
 
 });
 
