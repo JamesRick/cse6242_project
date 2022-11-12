@@ -1,3 +1,10 @@
+/**
+ * List of todos, add more things that need to be done.
+ * 
+ * TODO: 
+ * 
+ */
+
 var margin = {
         top: 10,
         bottom: 10,
@@ -10,9 +17,13 @@ var margin = {
     height = width * mapRatio,
     zoomDuration = 1000;
 
+/**
+ * LOG_LEVEL for controlling console.log output.
+ * valid values: "RELEASE", "DEBUG".
+ */
 const LOG_LEVEL = "RELEASE";
 
-var county_csv_path = "zillow_data/ga/all_sm_sa_month/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
+const county_csv_path = "zillow_data/ga/all_sm_sa_month/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
 const date_re = new RegExp('[0-9]+\-[0-9]+\-[0-9]+');
 const date_parser = d3.timeParse("%Y-%m-%d")
 const seconds_per_day = 60*60*24
@@ -51,10 +62,11 @@ var g = svg
     .call(zoom)
     .on("dblclick.zoom", null);
 
-/**
- * TODO: Need to color choropleth map with default dates housing price values.
- * TODO: Need to connect slider change to change in choropleth map values & colors.
- */
+var quantileScale = d3
+    .scaleQuantile()
+    .range(["#feedde","#fdbe85","#fd8d3c","#d94701"])
+
+var date_slider = d3.sliderBottom();
 
 Promise.all([
     d3.json("maps/us-topo.json"),
@@ -76,6 +88,9 @@ Promise.all([
 
     projection.scale(s).translate(t);
 
+    /**
+     * Creates the county boundaries
+     */
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
@@ -84,8 +99,11 @@ Promise.all([
         .append("path")
         .attr("d", path)
         .attr("class", "county-boundary")
-		.on("click", d => console.log(d.properties.NAME))
+        .on("click", d => console.log(d.properties.NAME))
 
+    /**
+     * Creates the state boundary
+     */
     g.append("g")
         .attr("id", "state-borders")
         .selectAll("path")
@@ -119,22 +137,17 @@ Promise.all([
     const default_date = d3.max(date_entries)
 
     if (LOG_LEVEL == "DEBUG") {
+        console.log(zillow_data);
         console.log(date_entries);
         console.log(default_date);
     }
 
-    var date_slider = d3.sliderBottom()
-        .marks(date_entries)
+    date_slider.marks(date_entries)
         .min(d3.min(date_entries))
         .max(d3.max(date_entries))
         .width(width/2)
         .tickFormat(d3.timeFormat('%Y-%m-%d'))
-        // .tickValues(tick_values)
-        .default(default_date)
-        .on('onchange', val => {
-            d3.select('p#value-time')
-                .text(d3.timeFormat('%Y')(val));
-        });
+        .default(default_date);
 
     g_slider.call(date_slider)
         .selectAll("text")
@@ -146,10 +159,8 @@ Promise.all([
         .selectAll("text")
         .attr("class", "slider-tick-text");
 
-    d3.select('p#value-time').text(d3.timeFormat('%Y')(date_slider.value()));
-
+    ready(undefined, georgia, zillow_data);
 });
-
 
 function read_zillow_data(row) {
     ret_val = {};
@@ -157,4 +168,56 @@ function read_zillow_data(row) {
         ret_val[key] = value;
     }
     return ret_val;
+}
+
+function ready(error, georgia, zillow_data) {
+    var cur_date = d3.select("g#date-slider")
+        .select("g.parameter-value")
+        .select("text").text();
+
+    if (LOG_LEVEL == "DEBUG") { console.log(cur_date); }
+
+    date_slider.on("onchange", () => {
+        cur_date = d3.select("g#date-slider")
+            .select("g.parameter-value")
+            .select("text")
+            .text();
+        // Color map with currently selected dates data.
+        colorMap(georgia, zillow_data, cur_date);
+    });
+
+    // // Color map with default dates data.
+    colorMap(georgia, zillow_data, cur_date);
+}
+
+function colorMap(georgia, zillow_data, cur_date) {
+    var date_data = [];
+    zillow_data.forEach(element => {
+        date_data.push({
+            "county": element["RegionName"].replace(" County", ""),
+            "price": parseFloat(element[cur_date]),
+        });
+    });
+
+    quantileScale = quantileScale.domain(
+        date_data.map((d) => {
+            return d["price"];
+        })
+    );
+
+    // legend_color = legend_color.scale(quantileScale);
+    // legend.call(legend_color);
+
+    d3.select("g#counties")
+        .selectAll("path")
+        .data(topojson.feature(georgia, georgia.objects.counties).features)
+        .style("fill", function (d) {
+            cur_date_data = date_data.filter((dd) => 
+                dd["county"].toLowerCase() == d["properties"]["NAME"].toLowerCase()
+            );
+            if (cur_date_data.length > 0) {
+                return quantileScale(cur_date_data[0]["price"]);
+            }
+            return "#8693AB";
+        });
 }
