@@ -52,7 +52,6 @@ var g = svg
     .on("dblclick.zoom", null);
 
 /**
- * TODO: Need to format slider with appropriate colors and style.
  * TODO: Need to color choropleth map with default dates housing price values.
  * TODO: Need to connect slider change to change in choropleth map values & colors.
  */
@@ -139,10 +138,13 @@ Promise.all([
 
     g_slider.call(date_slider)
         .selectAll("text")
-        .style("text-anchor", "end")
         .attr("dx", `-.05em`)
         .attr("dy", `.08em`)
         .attr("transform", `rotate(-45)`);
+
+    g_slider.select("g.axis")
+        .selectAll("text")
+        .attr("class", "slider-tick-text");
 
     d3.select('p#value-time').text(d3.timeFormat('%Y')(date_slider.value()));
 

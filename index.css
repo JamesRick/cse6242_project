@@ -35,3 +35,13 @@
 .county-boundary:hover, .state:hover {
     fill: #BDD4E7; /* SELECTED */
 }
+
+.slider-tick-text {
+    fill: #232425;
+    text-anchor: end;
+}
+
+.parameter-value {
+    fill: #000000;
+    text-anchor: end;
+}
