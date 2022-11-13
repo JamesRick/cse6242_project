@@ -41,12 +41,18 @@ var zoom = d3
     .scaleExtent([1, 10])
     .on("zoom", () => g.attr("transform", d3.event.transform));
 
+/**
+ * jrick6 -- Updated to use viewbox. With this and the added css classes 
+ * in index.css the map will now scale based on the browsers 
+ * window size.
+ */
 var svg = d3
     .select(".viz")
     .append("svg")
     .attr("class", "center-container")
-    .attr("height", height + margin.top + margin.bottom)
-    .attr("width", width + margin.left + margin.right);
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .classed("svg-content", true);
 
 svg.append("rect")
     .attr("class", "background center-container")
