@@ -13,9 +13,14 @@
 }
 
 .county-boundary {
-    fill: #8693AB; /* NON-SELECTED */
+    fill: #8693ab; /* NON-SELECTED */
     stroke: #212227; /* BOUNDARIES */
     stroke-width: 1px;
+}
+
+.selected {
+    stroke: #00c500 !important;
+    stroke-width: 3px !important;
 }
 
 .slider-tick-text {
@@ -29,7 +34,7 @@
 }
 
 .tooltip {
-    background: rgba(70, 70, 70, 0.9); 
+    background: rgba(70, 70, 70, 0.9);
     padding: 5px;
 }
 

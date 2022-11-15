@@ -54,6 +54,29 @@ function selectedYear(asInt = false) {
     }
 }
 
+function alternateSelect(d) {
+    let name = d.properties.NAME,
+        el = d3.select(this);
+    if (selectedCounties.has(name)) {
+        selectedCounties.delete(name);
+        el.lower();
+    } else {
+        selectedCounties.add(name);
+        el.raise();
+    }
+    el.classed("selected", selectedCounties.has(name));
+}
+
+function tooltipCallback(onClick) {
+    return (d) => {
+        let x = d3.event.x,
+            y = d3.event.y;
+        if (onClick) tip.show(d);
+        tip.style("top", `${y + 15}px`);
+        tip.style("left", `${x - 50}px`);
+    };
+}
+
 function getTip() {
     return d3.tip().html((d) => {
         let county = d.properties.NAME;

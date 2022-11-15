@@ -9,7 +9,9 @@ var width = parseInt(d3.select(".viz").style("width")),
     width = width - margin.left - margin.right,
     mapRatio = 0.5,
     height = width * mapRatio,
-    zoomDuration = 1000;
+    zoomDuration = 1000,
+    selectedCounties = new Set(),
+    tip = getTip();
 
 var zoom = d3
     .zoom()
@@ -41,15 +43,12 @@ var g = svg
     .call(zoom)
     .on("dblclick.zoom", null);
 
-var tip = getTip();
-
 var quantileScale = d3
     .scaleQuantile()
     .range(["#feedde", "#fdbe85", "#fd8d3c", "#d94701"]);
 var date_slider = d3.sliderBottom();
 
 var zillow_map;
-
 Promise.all([
     d3.json("maps/us-topo.less.min.json"),
     d3.json("maps/GA-13-georgia-counties.min.json"),
@@ -72,7 +71,10 @@ Promise.all([
     /**
      * Creates the county boundaries
      */
-	var counties__ = topojson.feature(georgia, georgia.objects.counties).features;
+    var counties__ = topojson.feature(
+        georgia,
+        georgia.objects.counties
+    ).features;
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
@@ -81,21 +83,10 @@ Promise.all([
         .append("path")
         .attr("d", path)
         .attr("class", "county-boundary")
-        .on("mouseover", (d) => {
-            let x = d3.event.x,
-                y = d3.event.y;
-            tip.show(d);
-            tip.style("top", `${y + 15}px`);
-            tip.style("left", `${x - 50}px`);
-        })
-        .on("mousemove", () => {
-            let x = d3.event.x,
-                y = d3.event.y;
-            tip.style("top", `${y + 15}px`);
-            tip.style("left", `${x - 50}px`);
-        })
+        .on("mouseover", tooltipCallback(true))
+        .on("mousemove", tooltipCallback(false))
         .on("mouseout", tip.hide)
-		.on("click", d => console.log(d));
+        .on("click", alternateSelect);
 
     g.call(tip);
 
@@ -151,7 +142,7 @@ Promise.all([
         // console.log(date_entries);
         // console.log(default_date);
         console.log(zillow_map);
-		console.log(counties__);
+        console.log(counties__);
     }
 
     date_slider
