@@ -22,6 +22,12 @@ var zoom = d3
     .scaleExtent([1, 10])
     .on("zoom", () => g.attr("transform", d3.event.transform));
 
+// d3.select(".area-top")
+//     .append("nav")
+//     .attr("class", "#Nav.area-top")
+//     .attr("width", width)
+//     .attr("height", "40");
+
 /**
  * jrick6 -- Updated to use viewbox. With this and the added css classes 
  * in index.css the map will now scale based on the browsers 
@@ -32,8 +38,7 @@ var svg = d3
     .append("svg")
     .attr("class", "center-container")
     .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
-    .classed("svg-content", true);
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
 
 svg.append("rect")
     .attr("class", "background center-container")
@@ -51,7 +56,8 @@ var g = svg
 
 var quantileScale = d3
     .scaleQuantile()
-    .range(["#feedde", "#fdbe85", "#fd8d3c", "#d94701"]);
+    .range(["#feedde","#fdbe85","#fd8d3c","#d94701"]) // These can be change to w/e we want later.
+
 var date_slider = d3.sliderBottom();
 
 var zillow_map;

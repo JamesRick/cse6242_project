@@ -1,3 +1,9 @@
+.page-body {
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .viz {
     display: inline-block;
     position: relative;
@@ -12,10 +18,12 @@
     position: absolute;
     top: 0;
     left: 0;
+    /* overflow: visible; */
 }
 
 .background {
     fill: none;
+    /* fill: #8693AB; */
     pointer-events: all;
 }
 
@@ -57,3 +65,43 @@
 .tooltip > div {
     color: white;
 }
+.area-top {
+    display: inline-block;
+    position: relative;
+    background-color: #12232E;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+}
+
+/* #Nav {
+    height: 40px;
+    width: 100%;
+} */
+
+.area-sidebar {
+    display: inline-block;
+    position: absolute;
+    background-color: #12232E;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 130px;
+}
+
+.area-bottom {
+    display: inline-block;
+    position: absolute;
+    fill: #000000;
+    color: #000000;
+    background-color: #000000;
+    top: 0;
+    left: 0;
+}
+
+/* Dark Blue: #12232E */
+/* Lighter Blue: #007CC7 */
+/* Lightest Blue: #4DA8DA */
+/* Shadow of Dark Blue: #203647 */
+/* Shadow of Light Blue: #EEFBFB */
