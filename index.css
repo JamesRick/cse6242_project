@@ -19,14 +19,6 @@
     pointer-events: all;
 }
 
-#states {
-    fill: #8693AB; /* NON-SELECTED */
-}
-
-#states .active {
-    display:none;
-}
-
 #state-borders {
     fill: none;
     stroke: #212227; /* BOUNDARIES */
@@ -37,19 +29,14 @@
 }
 
 .county-boundary {
-    fill: #8693AB; /* NON-SELECTED */
+    fill: #8693ab; /* NON-SELECTED */
     stroke: #212227; /* BOUNDARIES */
     stroke-width: 1px;
 }
 
-.nation {
-    fill: none;
-    stroke: #212227; /* BOUNDARIES */
-    stroke-width: 1px;
-}
-
-.county-boundary:hover, .state:hover {
-    fill: #BDD4E7; /* SELECTED */
+.selected {
+    stroke: #00c500 !important;
+    stroke-width: 3px !important;
 }
 
 .slider-tick-text {
@@ -60,4 +47,13 @@
 .parameter-value {
     fill: #000000;
     text-anchor: end;
+}
+
+.tooltip {
+    background: rgba(70, 70, 70, 0.9);
+    padding: 5px;
+}
+
+.tooltip > div {
+    color: white;
 }
