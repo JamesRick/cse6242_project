@@ -22,12 +22,6 @@ var zoom = d3
     .scaleExtent([1, 10])
     .on("zoom", () => g.attr("transform", d3.event.transform));
 
-// d3.select(".area-top")
-//     .append("nav")
-//     .attr("class", "#Nav.area-top")
-//     .attr("width", width)
-//     .attr("height", "40");
-
 /**
  * jrick6 -- Updated to use viewbox. With this and the added css classes 
  * in index.css the map will now scale based on the browsers 
@@ -38,7 +32,14 @@ var svg = d3
     .append("svg")
     .attr("class", "center-container")
     .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
+    .attr("viewBox", `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
+
+var svg_bottom = d3
+    .select(".area-bottom")
+    .append("svg")
+    .attr("class", "center-container")
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
 
 svg.append("rect")
     .attr("class", "background center-container")
@@ -116,17 +117,12 @@ Promise.all([
     /**
      * Slider code below
      */
-    var g_slider = svg
+    var g_slider = svg_bottom
         .append("g")
         .attr("id", "date-slider")
         .attr("width", width)
         .attr("height", 100)
-        .attr(
-            "transform",
-            `translate(${(1 / 2) * (width - width / 2)},${
-                height - margin.bottom * 10
-            })`
-        );
+        .attr("transform", `translate(${width/4},${10})`);
 
     let zillow_nest = d3
         .nest()

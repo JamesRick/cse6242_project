@@ -7,10 +7,10 @@
 .viz {
     display: inline-block;
     position: relative;
-    width: 100%;
-    padding-bottom: 100%;
+    width: 80%;
+    left: 15%;
     vertical-align: top;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .center-container {
@@ -18,7 +18,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    /* overflow: visible; */
+    overflow: hidden;
 }
 
 .background {
@@ -48,12 +48,12 @@
 }
 
 .slider-tick-text {
-    fill: #232425;
+    fill: #a1a8af;
     text-anchor: end;
 }
 
 .parameter-value {
-    fill: #000000;
+    fill: #ffffff;
     text-anchor: end;
 }
 
@@ -65,20 +65,27 @@
 .tooltip > div {
     color: white;
 }
+
 .area-top {
     display: inline-block;
     position: relative;
-    background-color: #12232E;
+    background-color: #203647;
     top: 0;
     left: 0;
     height: 40px;
     width: 100%;
 }
 
-/* #Nav {
-    height: 40px;
-    width: 100%;
-} */
+.area-bottom {
+    display: inline-block;
+    position: fixed;
+    background-color: #203647;
+    /* overflow: hidden; */
+    left: 15%;
+    right: 0;
+    bottom: 0;
+    height: 10%;
+}
 
 .area-sidebar {
     display: inline-block;
@@ -86,18 +93,8 @@
     background-color: #12232E;
     top: 0;
     left: 0;
-    height: 100vh;
-    width: 130px;
-}
-
-.area-bottom {
-    display: inline-block;
-    position: absolute;
-    fill: #000000;
-    color: #000000;
-    background-color: #000000;
-    top: 0;
-    left: 0;
+    height: 100%;
+    width: 15%;
 }
 
 /* Dark Blue: #12232E */
