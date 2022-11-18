@@ -22,12 +22,24 @@ var zoom = d3
     .scaleExtent([1, 10])
     .on("zoom", () => g.attr("transform", d3.event.transform));
 
+/**
+ * jrick6 -- Updated to use viewbox. With this and the added css classes 
+ * in index.css the map will now scale based on the browsers 
+ * window size.
+ */
 var svg = d3
     .select(".viz")
     .append("svg")
     .attr("class", "center-container")
-    .attr("height", height + margin.top + margin.bottom)
-    .attr("width", width + margin.left + margin.right);
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
+
+var svg_bottom = d3
+    .select(".area-bottom")
+    .append("svg")
+    .attr("class", "center-container")
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
 
 svg.append("rect")
     .attr("class", "background center-container")
@@ -45,7 +57,8 @@ var g = svg
 
 var quantileScale = d3
     .scaleQuantile()
-    .range(["#feedde", "#fdbe85", "#fd8d3c", "#d94701"]);
+    .range(["#feedde","#fdbe85","#fd8d3c","#d94701"]) // These can be change to w/e we want later.
+
 var date_slider = d3.sliderBottom();
 
 var zillow_map;
@@ -104,17 +117,12 @@ Promise.all([
     /**
      * Slider code below
      */
-    var g_slider = svg
+    var g_slider = svg_bottom
         .append("g")
         .attr("id", "date-slider")
         .attr("width", width)
         .attr("height", 100)
-        .attr(
-            "transform",
-            `translate(${(1 / 2) * (width - width / 2)},${
-                height - margin.bottom * 10
-            })`
-        );
+        .attr("transform", `translate(${width/4},${10})`);
 
     let zillow_nest = d3
         .nest()

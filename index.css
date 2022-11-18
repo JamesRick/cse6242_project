@@ -1,5 +1,29 @@
+.page-body {
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.viz {
+    display: inline-block;
+    position: relative;
+    width: 80%;
+    left: 15%;
+    vertical-align: top;
+    /* overflow: hidden; */
+}
+
+.center-container {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
 .background {
     fill: none;
+    /* fill: #8693AB; */
     pointer-events: all;
 }
 
@@ -24,12 +48,12 @@
 }
 
 .slider-tick-text {
-    fill: #232425;
+    fill: #a1a8af;
     text-anchor: end;
 }
 
 .parameter-value {
-    fill: #000000;
+    fill: #ffffff;
     text-anchor: end;
 }
 
@@ -41,3 +65,40 @@
 .tooltip > div {
     color: white;
 }
+
+.area-top {
+    display: inline-block;
+    position: relative;
+    background-color: #203647;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100%;
+}
+
+.area-bottom {
+    display: inline-block;
+    position: fixed;
+    background-color: #203647;
+    /* overflow: hidden; */
+    left: 15%;
+    right: 0;
+    bottom: 0;
+    height: 10%;
+}
+
+.area-sidebar {
+    display: inline-block;
+    position: absolute;
+    background-color: #12232E;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 15%;
+}
+
+/* Dark Blue: #12232E */
+/* Lighter Blue: #007CC7 */
+/* Lightest Blue: #4DA8DA */
+/* Shadow of Dark Blue: #203647 */
+/* Shadow of Light Blue: #EEFBFB */
