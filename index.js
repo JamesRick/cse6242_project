@@ -67,11 +67,11 @@ Promise.all([
     d3.json("maps/GA-13-georgia-counties.min.json"),
     d3.csv(county_csv_path, read_zillow_data),
 ]).then(([us, georgia, zillow_data]) => {
-    state = topojson
+    let state = topojson
         .feature(us, us.objects.states)
         .features.filter((f) => f.properties.name === "Georgia")[0];
 
-    var b = path.bounds(state),
+    let b = path.bounds(state),
         s =
             1 /
             Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
@@ -79,15 +79,17 @@ Promise.all([
             (width - s * (b[1][0] + b[0][0])) / 2,
             (height - s * (b[1][1] + b[0][1])) / 2,
         ];
-    projection.scale(s).translate(t);
-
-    /**
-     * Creates the county boundaries
-     */
+        projection.scale(s).translate(t);
+        
+        /**
+         * Creates the county boundaries
+         */
     var counties__ = topojson.feature(
         georgia,
         georgia.objects.counties
     ).features;
+    let countyNames = counties__.map(d => d.properties.NAME)
+        .sort()
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
@@ -96,10 +98,11 @@ Promise.all([
         .append("path")
         .attr("d", path)
         .attr("class", "county-boundary")
+        .attr("id", d => `${d.properties.NAME}-path`)
         .on("mouseover", tooltipCallback(true))
         .on("mousemove", tooltipCallback(false))
         .on("mouseout", tip.hide)
-        .on("click", alternateSelect);
+        .on("click", stateAlternateSelect);
 
     g.call(tip);
 
@@ -107,12 +110,32 @@ Promise.all([
      * Creates the state boundary
      */
     g.append("g")
-        .attr("id", "state-borders")
+        .attr("class", "state-borders")
         .selectAll("path")
         .data([state])
         .enter()
         .append("path")
         .attr("d", path);
+    
+    /**
+     * Add checkboxes to sidebar
+     */
+
+    d3.select("#county-list")
+        .selectAll()
+        .data(countyNames)
+        .enter()
+        .append("div")
+        .html(name => {
+            // let  = d.properties.NAME;
+            return `
+                <input type="checkbox" class="county-box" id="${name}-box">
+                <label class='box-label' for="test-box">${name}</label>
+            `
+        });
+    
+    d3.selectAll(".county-box")
+        .on('click', countyAlternateSelect);
 
     /**
      * Slider code below

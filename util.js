@@ -54,7 +54,22 @@ function selectedYear(asInt = false) {
     }
 }
 
-function alternateSelect(d) {
+function countyAlternateSelect() {
+    let target = d3.select(d3.event.target),
+        checked = target.property("checked"),
+        name = target.attr("id").split("-")[0],
+        el = d3.select(`#${name}-path`);
+    if (checked) {
+        selectedCounties.add(name);
+        el.raise();
+    } else {
+        selectedCounties.delete(name);
+        el.lower();
+    }
+    el.classed("selected", selectedCounties.has(name));
+}
+
+function stateAlternateSelect(d) {
     let name = d.properties.NAME,
         el = d3.select(this);
     if (selectedCounties.has(name)) {
@@ -64,6 +79,7 @@ function alternateSelect(d) {
         selectedCounties.add(name);
         el.raise();
     }
+    d3.select(`#${name}-box`).property("checked", selectedCounties.has(name));
     el.classed("selected", selectedCounties.has(name));
 }
 
@@ -72,7 +88,7 @@ function tooltipCallback(onClick) {
         let x = d3.event.x,
             y = d3.event.y;
         if (onClick) tip.show(d);
-        tip.style("top", `${y + 15}px`);
+        tip.style("top", `${y + 25}px`);
         tip.style("left", `${x - 50}px`);
     };
 }

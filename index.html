@@ -7,15 +7,24 @@
     <script src="lib/topojson.v2.min.js"></script>
     <script src="lib/d3-tip.min.js"></script>
     <script src="lib/d3-simple-slider.min.js"></script>
-    <link rel="stylesheet" href="index.css" />
+    <!-- <link rel="stylesheet" href="index.css" /> -->
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
 </head>
 
 <body class="page-body">
     <div class="area-top"></div>
     <div class="area-bottom"></div>
-    <div class="area-sidebar"></div>
+    <div class="area-sidebar">
+        <!-- For selecting different house types  -->
+        <select id="data-select"></select>
+        <!-- List of counties for selection by name -->
+        <div id="county-list"></div>
+    </div>
     <div class="viz"></div>
+
     <script src="const.js"></script>
     <script src="util.js"></script>
     <script src="index.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/less"></script>
 </body>

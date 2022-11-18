@@ -1,7 +1,33 @@
+@boundaries: #212227;
+@dark-blue: #12232E;
+@lighter-blue: #007CC7;
+@lightest-blue: #4DA8DA;
+@dark-blue-shadow: #203647;
+@light-blue-shadow: #EEFBFB;
+
+body {
+    // overflow: hidden;
+}
+
+.area-sidebar {
+    overflow-y: auto;
+    padding: 10px 10px 10px 10px;
+    label {
+        color: white;
+    }
+}
+
+#data-select {
+    width: 100%;
+    margin-bottom: 7px;
+}
+
 .page-body {
+    // height: 100%;
     margin-top: 0;
     margin-left: 0;
     margin-right: 0;
+    margin-bottom: 0;
 }
 
 .viz {
@@ -27,9 +53,9 @@
     pointer-events: all;
 }
 
-#state-borders {
+.state-borders {
     fill: none;
-    stroke: #212227; /* BOUNDARIES */
+    stroke: @boundaries; /* BOUNDARIES */
     stroke-width: 2px;
     stroke-linejoin: round;
     stroke-linecap: round;
@@ -38,7 +64,7 @@
 
 .county-boundary {
     fill: #8693ab; /* NON-SELECTED */
-    stroke: #212227; /* BOUNDARIES */
+    stroke: @boundaries; /* BOUNDARIES */
     stroke-width: 1px;
 }
 
@@ -53,23 +79,22 @@
 }
 
 .parameter-value {
-    fill: #ffffff;
+    fill: white;
     text-anchor: end;
 }
 
 .tooltip {
     background: rgba(70, 70, 70, 0.9);
     padding: 5px;
-}
-
-.tooltip > div {
-    color: white;
+    div {
+        color: white;
+    }
 }
 
 .area-top {
     display: inline-block;
     position: relative;
-    background-color: #203647;
+    background-color: @dark-blue-shadow;
     top: 0;
     left: 0;
     height: 40px;
@@ -79,7 +104,7 @@
 .area-bottom {
     display: inline-block;
     position: fixed;
-    background-color: #203647;
+    background-color: @dark-blue-shadow;
     /* overflow: hidden; */
     left: 15%;
     right: 0;
@@ -90,15 +115,9 @@
 .area-sidebar {
     display: inline-block;
     position: absolute;
-    background-color: #12232E;
+    background-color: @dark-blue;
     top: 0;
     left: 0;
     height: 100%;
     width: 15%;
 }
-
-/* Dark Blue: #12232E */
-/* Lighter Blue: #007CC7 */
-/* Lightest Blue: #4DA8DA */
-/* Shadow of Dark Blue: #203647 */
-/* Shadow of Light Blue: #EEFBFB */
