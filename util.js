@@ -96,14 +96,13 @@ function tooltipCallback(onClick) {
 function getTip() {
     return d3.tip().html((d) => {
         let county = d.properties.NAME;
-        let price = zillow_map[d.properties.NAME][selectedDate()];
+        let price = zillow_map[d.properties.NAME]?.[selectedDate()] | 0;
         // let avgPrice = avgForYear()
 
         return `
             <div class="tooltip" id="tooltip">
                 <div><b>County Name</b>: ${county}</div>
                 <div><b>Average Price</b>: ${dollar.format(price)}</div>
-                <div><b>
             </div>
             `;
     });
