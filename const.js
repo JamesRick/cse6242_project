@@ -11,8 +11,7 @@ const margin = {
  */
 const LOG_LEVEL = "DEBUG";
 
-const county_csv_path =
-    "zillow_data/ga/all_sm_sa_month/County_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv";
+const index_path = "zillow_data/index.json";
 const date_re = new RegExp("[0-9]+-[0-9]+-[0-9]+");
 const date_parser = d3.timeParse("%Y-%m-%d");
 const seconds_per_day = 60 * 60 * 24;
