@@ -67,7 +67,7 @@ var g = svg
 
 var quantileScale = d3
     .scaleQuantile()
-    .range(["#feedde", "#fdbe85", "#fd8d3c", "#d94701"]); // These can be change to w/e we want later.
+    .range(colors); // These can be change to w/e we want later.
 
 var date_slider = d3.sliderBottom();
 
@@ -181,13 +181,28 @@ function redrawData(georgia, dataPath) {
         zillow_map = flatten_nest(zillow_nest);
 
         var date_entries = new Set();
+        var date_entries_str = new Set();
         zillow_data.forEach((element) => {
             Object.keys(element).forEach((key) => {
-                if (!date_entries.has(date_parser(key)) && date_re.test(key)) {
+                // console.log("key", key);
+                // console.log("date_entries", date_entries);
+                // console.log("date_entries_str", date_entries_str);
+                if (!date_entries_str.has(key) && date_re.test(key)) {
                     date_entries.add(date_parser(key));
+                    date_entries_str.add(key);
                 }
             });
         });
+
+        var domain_data = [];
+        zillow_data.forEach((d) => {
+            date_entries.forEach((element) => {
+                domain_data.push(parseFloat(d[date_formatter(element)]))
+            });
+        });
+        quantileScale = quantileScale.domain(
+            domain_data
+        );
 
         date_entries = Array.from(date_entries);
         tick_values = date_entries.filter((date) => {
@@ -255,12 +270,6 @@ function colorMap(georgia, zillow_data, cur_date) {
             price: parseFloat(element[cur_date]),
         });
     });
-
-    quantileScale = quantileScale.domain(
-        date_data.map((d) => {
-            return d["price"];
-        })
-    );
 
     // legend_color = legend_color.scale(quantileScale);
     // legend.call(legend_color);
