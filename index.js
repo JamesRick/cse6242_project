@@ -197,9 +197,6 @@ function redrawData(georgia, dataPath) {
         var date_entries_str = new Set();
         zillow_data.forEach((element) => {
             Object.keys(element).forEach((key) => {
-                // console.log("key", key);
-                // console.log("date_entries", date_entries);
-                // console.log("date_entries_str", date_entries_str);
                 if (!date_entries_str.has(key) && date_re.test(key)) {
                     date_entries.add(date_parser(key));
                     date_entries_str.add(key);
@@ -216,6 +213,18 @@ function redrawData(georgia, dataPath) {
         quantileScale = quantileScale.domain(
             domain_data
         );
+
+        /**
+         * TODO: Fix lowest color of legend somehow.
+         * Lowest color of legend blends in with the background.
+         */
+        let legend = svg.append("g")
+            .attr("id", "legend")
+            .attr("transform", `translate(${width-width/4},${margin.top})`);
+        var legend_color = d3.legendColor()
+            .labelFormat(d3.format(".2f"));
+        legend_color = legend_color.scale(quantileScale);
+        legend.call(legend_color);
 
         date_entries = Array.from(date_entries);
         tick_values = date_entries.filter((date) => {
@@ -283,9 +292,6 @@ function colorMap(georgia, zillow_data, cur_date) {
             price: parseFloat(element[cur_date]),
         });
     });
-
-    // legend_color = legend_color.scale(quantileScale);
-    // legend.call(legend_color);
 
     d3.select("g#counties")
         .selectAll("path")
