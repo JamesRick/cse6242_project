@@ -39,6 +39,19 @@ var svg = d3
         }`
     );
 
+var svg_defs = svg.append("defs");
+
+svg_defs.append('pattern')
+    .attr('id', 'stripe-pattern')
+    .attr('width', 10)
+    .attr('height', 10)
+    .attr('patternUnits', 'userSpaceOnUse')
+    .attr('patternTransform', 'rotate(-45)')
+    .append('rect')
+    .attr('width', 6)
+    .attr('height', 10)
+    .attr('fill', '#8693AB');
+
 var svg_bottom = d3
     .select(".area-bottom")
     .append("svg")
@@ -283,9 +296,9 @@ function colorMap(georgia, zillow_data, cur_date) {
                     dd["county"].toLowerCase() ==
                     d["properties"]["NAME"].toLowerCase()
             );
-            if (cur_date_data.length > 0) {
+            if (cur_date_data.length > 0 && !isNaN(cur_date_data[0]["price"])) {
                 return quantileScale(cur_date_data[0]["price"]);
             }
-            return "#8693AB";
+            return "url(#stripe-pattern)";
         });
 }
