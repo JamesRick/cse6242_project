@@ -70,8 +70,8 @@ function countyAlternateSelect() {
 }
 
 function stateAlternateSelect(d) {
-    let name = d.properties.NAME,
-        el = d3.select(this);
+    let name = d.properties.NAME;
+    el = d3.select(`#${name}-path`);
     if (selectedCounties.has(name)) {
         selectedCounties.delete(name);
         el.lower();
@@ -106,4 +106,23 @@ function getTip() {
             </div>
             `;
     });
+}
+
+function getDataForCounty(countyMap, countyName) {
+    let allCountyValues = countyMap[countyName];
+    let formatted = Object.keys(allCountyValues)
+        .filter((k) => Date.parse(k))
+        .map((k) => ({
+            date: k,
+            value: parseFloat(allCountyValues[k]) | 0,
+        }));
+
+    return formatted;
+}
+
+function refreshLineChart() {
+    let linedata = [...selectedCounties].map((e) =>
+        getDataForCounty(zillow_map, e)
+    );
+    drawLineChart(linedata);
 }

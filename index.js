@@ -41,16 +41,17 @@ var svg = d3
 
 var svg_defs = svg.append("defs");
 
-svg_defs.append('pattern')
-    .attr('id', 'stripe-pattern')
-    .attr('width', 10)
-    .attr('height', 10)
-    .attr('patternUnits', 'userSpaceOnUse')
-    .attr('patternTransform', 'rotate(-45)')
-    .append('rect')
-    .attr('width', 6)
-    .attr('height', 10)
-    .attr('fill', '#8693AB');
+svg_defs
+    .append("pattern")
+    .attr("id", "stripe-pattern")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("patternTransform", "rotate(-45)")
+    .append("rect")
+    .attr("width", 6)
+    .attr("height", 10)
+    .attr("fill", "#8693AB");
 
 var svg_bottom = d3
     .select(".area-bottom")
@@ -78,9 +79,7 @@ var g = svg
     .call(zoom)
     .on("dblclick.zoom", null);
 
-var quantileScale = d3
-    .scaleQuantile()
-    .range(colors); // These can be change to w/e we want later.
+var quantileScale = d3.scaleQuantile().range(colors); // These can be change to w/e we want later.
 
 var date_slider = d3.sliderBottom();
 
@@ -124,7 +123,10 @@ Promise.all([
         .on("mouseover", tooltipCallback(true))
         .on("mousemove", tooltipCallback(false))
         .on("mouseout", tip.hide)
-        .on("click", stateAlternateSelect);
+        .on("click", (d) => {
+            stateAlternateSelect(d);
+            refreshLineChart();
+        });
 
     g.call(tip);
 
@@ -142,21 +144,22 @@ Promise.all([
     /**
      * Add checkboxes to sidebar
      */
-
     d3.select("#county-list")
         .selectAll()
         .data(countyNames)
         .enter()
         .append("div")
         .html((name) => {
-            // let  = d.properties.NAME;
             return `
                 <input type="checkbox" class="county-box" id="${name}-box">
                 <label class='box-label' for="test-box">${name}</label>
             `;
         });
 
-    d3.selectAll(".county-box").on("click", countyAlternateSelect);
+    d3.selectAll(".county-box").on("click", () => {
+        countyAlternateSelect();
+        refreshLineChart();
+    });
 
     d3.select("#data-select")
         .selectAll("option")
@@ -207,22 +210,21 @@ function redrawData(georgia, dataPath) {
         var domain_data = [];
         zillow_data.forEach((d) => {
             date_entries.forEach((element) => {
-                domain_data.push(parseFloat(d[date_formatter(element)]))
+                domain_data.push(parseFloat(d[date_formatter(element)]));
             });
         });
-        quantileScale = quantileScale.domain(
-            domain_data
-        );
+        quantileScale = quantileScale.domain(domain_data);
 
         /**
          * TODO: Fix lowest color of legend somehow.
          * Lowest color of legend blends in with the background.
          */
-        let legend = svg.append("g")
+        d3.select("#legend").remove();
+        let legend = svg
+            .append("g")
             .attr("id", "legend")
-            .attr("transform", `translate(${width-width/4},${margin.top})`);
-        var legend_color = d3.legendColor()
-            .labelFormat(d3.format(".2f"));
+            .attr("transform", `translate(${width - width / 4},${margin.top})`);
+        var legend_color = d3.legendColor().labelFormat(d3.format(",.2f"));
         legend_color = legend_color.scale(quantileScale);
         legend.call(legend_color);
 
@@ -261,6 +263,7 @@ function redrawData(georgia, dataPath) {
             .attr("class", "slider-tick-text");
 
         ready(undefined, georgia, zillow_data);
+        refreshLineChart();
     });
 }
 
@@ -308,3 +311,9 @@ function colorMap(georgia, zillow_data, cur_date) {
             return "url(#stripe-pattern)";
         });
 }
+
+// function drawGraphs() {
+//     var viz = d3.select(".viz");
+
+//     var g = viz.append("g").attr("id", "")
+// }
