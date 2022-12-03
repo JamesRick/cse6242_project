@@ -7,11 +7,12 @@
 
 var width = parseInt(d3.select(".viz").style("width")),
     width = width - margin.left - margin.right,
-    mapRatio = 0.5,
+    mapRatio = 0.6,
     height = width * mapRatio,
     zoomDuration = 1000,
     selectedCounties = new Set(),
-    tip = getTip();
+    tip = getTip(),
+    counties__;
 
 var zoom = d3
     .zoom()
@@ -41,16 +42,17 @@ var svg = d3
 
 var svg_defs = svg.append("defs");
 
-svg_defs.append('pattern')
-    .attr('id', 'stripe-pattern')
-    .attr('width', 10)
-    .attr('height', 10)
-    .attr('patternUnits', 'userSpaceOnUse')
-    .attr('patternTransform', 'rotate(-45)')
-    .append('rect')
-    .attr('width', 6)
-    .attr('height', 10)
-    .attr('fill', '#8693AB');
+svg_defs
+    .append("pattern")
+    .attr("id", "stripe-pattern")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("patternTransform", "rotate(-45)")
+    .append("rect")
+    .attr("width", 6)
+    .attr("height", 10)
+    .attr("fill", "#8693AB");
 
 var svg_bottom = d3
     .select(".area-bottom")
@@ -78,9 +80,7 @@ var g = svg
     .call(zoom)
     .on("dblclick.zoom", null);
 
-var quantileScale = d3
-    .scaleQuantile()
-    .range(colors); // These can be change to w/e we want later.
+var quantileScale = d3.scaleQuantile().range(colors); // These can be change to w/e we want later.
 
 var date_slider = d3.sliderBottom();
 
@@ -107,7 +107,7 @@ Promise.all([
     /**
      * Creates the county boundaries
      */
-    var counties__ = topojson.feature(
+    counties__ = topojson.feature(
         georgia,
         georgia.objects.counties
     ).features;
@@ -124,7 +124,10 @@ Promise.all([
         .on("mouseover", tooltipCallback(true))
         .on("mousemove", tooltipCallback(false))
         .on("mouseout", tip.hide)
-        .on("click", stateAlternateSelect);
+        .on("click", (d) => {
+            stateAlternateSelect(d);
+            refreshLineChart();
+        });
 
     g.call(tip);
 
@@ -142,21 +145,22 @@ Promise.all([
     /**
      * Add checkboxes to sidebar
      */
-
     d3.select("#county-list")
         .selectAll()
         .data(countyNames)
         .enter()
         .append("div")
         .html((name) => {
-            // let  = d.properties.NAME;
             return `
                 <input type="checkbox" class="county-box" id="${name}-box">
                 <label class='box-label' for="test-box">${name}</label>
             `;
         });
 
-    d3.selectAll(".county-box").on("click", countyAlternateSelect);
+    d3.selectAll(".county-box").on("click", () => {
+        countyAlternateSelect();
+        refreshLineChart();
+    });
 
     d3.select("#data-select")
         .selectAll("option")
@@ -185,7 +189,7 @@ function redrawData(georgia, dataPath) {
             .attr("id", "date-slider")
             .attr("width", width)
             .attr("height", 100)
-            .attr("transform", `translate(${width / 4},${10})`);
+            .attr("transform", `translate(${width / 4},${20})`);
 
         let zillow_nest = d3
             .nest()
@@ -207,22 +211,21 @@ function redrawData(georgia, dataPath) {
         var domain_data = [];
         zillow_data.forEach((d) => {
             date_entries.forEach((element) => {
-                domain_data.push(parseFloat(d[date_formatter(element)]))
+                domain_data.push(parseFloat(d[date_formatter(element)]));
             });
         });
-        quantileScale = quantileScale.domain(
-            domain_data
-        );
+        quantileScale = quantileScale.domain(domain_data);
 
         /**
          * TODO: Fix lowest color of legend somehow.
          * Lowest color of legend blends in with the background.
          */
-        let legend = svg.append("g")
+        d3.select("#legend").remove();
+        let legend = svg
+            .append("g")
             .attr("id", "legend")
-            .attr("transform", `translate(${width-width/4},${margin.top})`);
-        var legend_color = d3.legendColor()
-            .labelFormat(d3.format(".2f"));
+            .attr("transform", `translate(${width - width / 2.5},${margin.top})`);
+        var legend_color = d3.legendColor().labelFormat(d3.format(",.2f"));
         legend_color = legend_color.scale(quantileScale);
         legend.call(legend_color);
 
@@ -244,13 +247,14 @@ function redrawData(georgia, dataPath) {
             .marks(date_entries)
             .min(d3.min(date_entries))
             .max(d3.max(date_entries))
-            .width(width / 2)
+            .width(width / 1.5)
             .tickFormat(d3.timeFormat("%Y-%m-%d"))
             .default(default_date);
 
         g_slider
             .call(date_slider)
             .selectAll("text")
+            .attr("font-size", "1em")
             .attr("dx", `-.05em`)
             .attr("dy", `.08em`)
             .attr("transform", `rotate(-45)`);
@@ -261,6 +265,7 @@ function redrawData(georgia, dataPath) {
             .attr("class", "slider-tick-text");
 
         ready(undefined, georgia, zillow_data);
+        refreshLineChart();
     });
 }
 
@@ -274,7 +279,7 @@ function ready(error, georgia, zillow_data) {
     date_slider.on("onchange", () => {
         cur_date = selectedDate();
 
-        if (LOG_LEVEL == "DEBUG") console.log(cur_date);
+        // if (LOG_LEVEL == "DEBUG") console.log(cur_date);
 
         // Color map with currently selected dates data.
         colorMap(georgia, zillow_data, cur_date);
@@ -295,9 +300,9 @@ function colorMap(georgia, zillow_data, cur_date) {
 
     d3.select("g#counties")
         .selectAll("path")
-        .data(topojson.feature(georgia, georgia.objects.counties).features)
+        // .data(counties__)
         .style("fill", function (d) {
-            cur_date_data = date_data.filter(
+            let cur_date_data = date_data.filter(
                 (dd) =>
                     dd["county"].toLowerCase() ==
                     d["properties"]["NAME"].toLowerCase()

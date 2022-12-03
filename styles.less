@@ -13,7 +13,7 @@ body {
     overflow-y: auto;
     padding: 10px 10px 10px 10px;
     label {
-        color: white;
+        color: rgb(255, 255, 255);
     }
 }
 
@@ -34,7 +34,8 @@ body {
     display: inline-block;
     position: relative;
     width: 80%;
-    left: 15%;
+    top: 60px;
+    left: -2.5%;
     vertical-align: top;
     /* overflow: hidden; */
 }
@@ -42,8 +43,17 @@ body {
 .center-container {
     display: inline-block;
     position: absolute;
+    width: 80%;
     top: 0;
     left: 0;
+    overflow: hidden;
+}
+
+#line-chart {
+    display: inline-block;
+    position: relative;
+    width: 60%;
+    left: 60%;
     overflow: hidden;
 }
 
@@ -74,9 +84,15 @@ body {
 }
 
 .slider-tick-text {
+    font-size: medium;
     fill: #a1a8af;
     text-anchor: end;
+    font-size: 10px;
 }
+
+.slider text {
+    font-size: medium;
+  }
 
 .parameter-value {
     fill: white;
@@ -93,7 +109,7 @@ body {
 
 .area-top {
     display: inline-block;
-    position: relative;
+    position: fixed;
     background-color: @dark-blue-shadow;
     top: 0;
     left: 0;
@@ -105,8 +121,7 @@ body {
     display: inline-block;
     position: fixed;
     background-color: @dark-blue-shadow;
-    /* overflow: hidden; */
-    left: 15%;
+    left: 10%;
     right: 0;
     bottom: 0;
     height: 10%;
@@ -119,5 +134,5 @@ body {
     top: 0;
     left: 0;
     height: 100%;
-    width: 15%;
+    width: 10%;
 }
