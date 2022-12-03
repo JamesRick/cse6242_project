@@ -11,7 +11,8 @@ var width = parseInt(d3.select(".viz").style("width")),
     height = width * mapRatio,
     zoomDuration = 1000,
     selectedCounties = new Set(),
-    tip = getTip();
+    tip = getTip(),
+    counties__;
 
 var zoom = d3
     .zoom()
@@ -106,7 +107,7 @@ Promise.all([
     /**
      * Creates the county boundaries
      */
-    var counties__ = topojson.feature(
+    counties__ = topojson.feature(
         georgia,
         georgia.objects.counties
     ).features;
@@ -253,6 +254,7 @@ function redrawData(georgia, dataPath) {
         g_slider
             .call(date_slider)
             .selectAll("text")
+            .attr("font-size", "1em")
             .attr("dx", `-.05em`)
             .attr("dy", `.08em`)
             .attr("transform", `rotate(-45)`);
@@ -277,7 +279,7 @@ function ready(error, georgia, zillow_data) {
     date_slider.on("onchange", () => {
         cur_date = selectedDate();
 
-        if (LOG_LEVEL == "DEBUG") console.log(cur_date);
+        // if (LOG_LEVEL == "DEBUG") console.log(cur_date);
 
         // Color map with currently selected dates data.
         colorMap(georgia, zillow_data, cur_date);
@@ -298,9 +300,9 @@ function colorMap(georgia, zillow_data, cur_date) {
 
     d3.select("g#counties")
         .selectAll("path")
-        .data(topojson.feature(georgia, georgia.objects.counties).features)
+        // .data(counties__)
         .style("fill", function (d) {
-            cur_date_data = date_data.filter(
+            let cur_date_data = date_data.filter(
                 (dd) =>
                     dd["county"].toLowerCase() ==
                     d["properties"]["NAME"].toLowerCase()
