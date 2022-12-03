@@ -20,14 +20,14 @@ async function drawLineChart(countyData) {
     // console.log("drawLineChart", "svg", svg)
 
     let dimensions = {
-        width: 450,
-        height: 300,
+        width: 650,
+        height: 400,
         margin: {
-        top: 55,
-        right: 10,
-        bottom: 60,
-        left: 60,
-    },
+            top: 55,
+            right: 10,
+            bottom: 60,
+            left: 60,
+        },
     };
     dimensions.boundedWidth =
         dimensions.width - dimensions.margin.left - dimensions.margin.right;
@@ -111,4 +111,4 @@ async function drawLineChart(countyData) {
         .text("Historical Housing Prices (in USD)")
         .style("font-size", "15px")
         .style("text-decoration", "underline");
-    }
+}
