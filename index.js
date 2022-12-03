@@ -7,7 +7,7 @@
 
 var width = parseInt(d3.select(".viz").style("width")),
     width = width - margin.left - margin.right,
-    mapRatio = 0.5,
+    mapRatio = 0.6,
     height = width * mapRatio,
     zoomDuration = 1000,
     selectedCounties = new Set(),
@@ -188,7 +188,7 @@ function redrawData(georgia, dataPath) {
             .attr("id", "date-slider")
             .attr("width", width)
             .attr("height", 100)
-            .attr("transform", `translate(${width / 4},${10})`);
+            .attr("transform", `translate(${width / 4},${20})`);
 
         let zillow_nest = d3
             .nest()
@@ -223,7 +223,7 @@ function redrawData(georgia, dataPath) {
         let legend = svg
             .append("g")
             .attr("id", "legend")
-            .attr("transform", `translate(${width - width / 4},${margin.top})`);
+            .attr("transform", `translate(${width - width / 2.5},${margin.top})`);
         var legend_color = d3.legendColor().labelFormat(d3.format(",.2f"));
         legend_color = legend_color.scale(quantileScale);
         legend.call(legend_color);
@@ -246,7 +246,7 @@ function redrawData(georgia, dataPath) {
             .marks(date_entries)
             .min(d3.min(date_entries))
             .max(d3.max(date_entries))
-            .width(width / 2)
+            .width(width / 1.5)
             .tickFormat(d3.timeFormat("%Y-%m-%d"))
             .default(default_date);
 
@@ -311,9 +311,3 @@ function colorMap(georgia, zillow_data, cur_date) {
             return "url(#stripe-pattern)";
         });
 }
-
-// function drawGraphs() {
-//     var viz = d3.select(".viz");
-
-//     var g = viz.append("g").attr("id", "")
-// }

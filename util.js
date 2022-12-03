@@ -112,9 +112,10 @@ function getDataForCounty(countyMap, countyName) {
     let allCountyValues = countyMap[countyName];
     let formatted = Object.keys(allCountyValues)
         .filter((k) => Date.parse(k))
+        .filter((k) => k != 'Unnamed: 0')
         .map((k) => ({
             date: k,
-            value: parseFloat(allCountyValues[k]) | 0,
+            value: parseFloat(allCountyValues[k]) | null,
         }));
 
     return formatted;
