@@ -12,7 +12,8 @@ var width = parseInt(d3.select(".viz").style("width")),
     zoomDuration = 1000,
     selectedCounties = new Set(),
     tip = getTip(),
-    counties__;
+    counties__,
+    countyNames;
 
 var zoom = d3
     .zoom()
@@ -35,8 +36,7 @@ var svg = d3
     .attr("preserveAspectRatio", "xMinYMin meet")
     .attr(
         "viewBox",
-        `${0} ${0} ${width + margin.left + margin.right} ${
-            height + margin.top + margin.bottom
+        `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom
         }`
     );
 
@@ -61,8 +61,7 @@ var svg_bottom = d3
     .attr("preserveAspectRatio", "xMinYMin meet")
     .attr(
         "viewBox",
-        `${0} ${0} ${width + margin.left + margin.right} ${
-            height + margin.top + margin.bottom
+        `${0} ${0} ${width + margin.left + margin.right} ${height + margin.top + margin.bottom
         }`
     );
 
@@ -111,7 +110,7 @@ Promise.all([
         georgia,
         georgia.objects.counties
     ).features;
-    let countyNames = counties__.map((d) => d.properties.NAME).sort();
+    countyNames = counties__.map((d) => d.properties.NAME).sort();
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
@@ -254,7 +253,7 @@ function redrawData(georgia, dataPath) {
         g_slider
             .call(date_slider)
             .selectAll("text")
-            .attr("font-size", "1em")
+            .attr("font-size", "2em")
             .attr("dx", `-.05em`)
             .attr("dy", `.08em`)
             .attr("transform", `rotate(-45)`);
@@ -280,6 +279,7 @@ function ready(error, georgia, zillow_data) {
         cur_date = selectedDate();
 
         // if (LOG_LEVEL == "DEBUG") console.log(cur_date);
+        vert_stroke(cur_date);
 
         // Color map with currently selected dates data.
         colorMap(georgia, zillow_data, cur_date);

@@ -1,30 +1,23 @@
-import sys
+import numpy as np
 import json
-import random
-import math
-from typing import List
+from hsluv import hsluv_to_rgb
 
-letters = [*'0123456789ABCDEF']
-# function getRandomHex() {
-#     var letters = '0123456789ABCDEF'.split('');
-#     var color = '#';
-#     for (var i = 0; i < 6; i++ ) {
-#         color += letters[Math.floor(Math.random() * 16)];
-#     }
-#     return color;
-# }
+nrows, ncols = 16, 10
 
-def get_random_hex(k) -> str: 
-    color = '#' 
-    random.seed(k)
-    for _ in range(6): 
-        color += letters[math.floor(random.random() * 16)]
-    return color
+h = np.random.uniform(low=0, high=360, size=(nrows, ncols))
+l = np.random.normal(loc=66, scale=10, size=(nrows, ncols))
+s = np.random.uniform(low=80, high=100, size=(nrows, ncols))
 
-def get_n_colors(n: int) -> List[str]: 
-    return [get_random_hex(s) for s in range(n)]
+image = np.dstack((h,s,l))
+image = np.apply_along_axis(hsluv_to_rgb, 2, image)
 
+img_int = (image.reshape(160, 3) * 255).astype(int)
 
-if __name__ == '__main__': 
-    n_colors = int(sys.argv[1])
-    print(json.dumps(get_n_colors(n_colors)))
+def rgb_to_hex(rgb):
+    return '%02x%02x%02x' % rgb
+
+x = []
+for row in img_int: 
+    x.append('#' + rgb_to_hex(tuple(row)))
+
+print(json.dumps(x))

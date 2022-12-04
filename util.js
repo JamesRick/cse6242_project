@@ -115,15 +115,33 @@ function getDataForCounty(countyMap, countyName) {
         .filter((k) => k != 'Unnamed: 0')
         .map((k) => ({
             date: k,
-            value: parseFloat(allCountyValues[k]) | null,
-        }));
+            value: parseFloat(allCountyValues[k]) | 0,
+        }))
+        .filter(o => o.value > 0);
 
     return formatted;
 }
 
+function vert_stroke(cur_date) {
+    d3.select(".vert-line").remove()
+
+    d3.select("#line-container")
+        .append("svg:line")
+        .attr("class", "vert-line")
+        .attr("x1", Math.max(LC_xScale(LC_dateParser(cur_date)), 0))
+        .attr("y1", dimensions.boundedHeight)
+        .attr("x2", Math.max(LC_xScale(LC_dateParser(cur_date)), 0))
+        .attr("y2", 0);
+}
+
 function refreshLineChart() {
-    let linedata = [...selectedCounties].map((e) =>
-        getDataForCounty(zillow_map, e)
-    );
+    let linedata = [...selectedCounties].map((e) => ({
+        name: e,
+        data: {
+            actual: getDataForCounty(zillow_map, e),
+            // TODO: replace this with the real values
+            preds: getDataForCounty({ [e]: {} }, e)
+        }
+    }));
     drawLineChart(linedata);
 }

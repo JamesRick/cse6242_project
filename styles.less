@@ -9,9 +9,20 @@ body {
     // overflow: hidden;
 }
 
+.label {
+    font-size: large;
+}
+
+.vert-line {
+    stroke: black;
+    stroke-width: 2px;
+    z-index: 999;
+}
+
 .area-sidebar {
     overflow-y: auto;
     padding: 10px 10px 10px 10px;
+
     label {
         color: rgb(255, 255, 255);
     }
@@ -65,7 +76,8 @@ body {
 
 .state-borders {
     fill: none;
-    stroke: @boundaries; /* BOUNDARIES */
+    stroke: @boundaries;
+    /* BOUNDARIES */
     stroke-width: 3px;
     stroke-linejoin: round;
     stroke-linecap: round;
@@ -73,8 +85,10 @@ body {
 }
 
 .county-boundary {
-    fill: #8693ab; /* NON-SELECTED */
-    stroke: @boundaries; /* BOUNDARIES */
+    fill: #8693ab;
+    /* NON-SELECTED */
+    stroke: @boundaries;
+    /* BOUNDARIES */
     stroke-width: 2px;
 }
 
@@ -87,12 +101,12 @@ body {
     font-size: medium;
     fill: #a1a8af;
     text-anchor: end;
-    font-size: 10px;
+    font-size: 1.2em;
 }
 
 .slider text {
     font-size: medium;
-  }
+}
 
 .parameter-value {
     fill: white;
@@ -102,6 +116,7 @@ body {
 .tooltip {
     background: rgba(70, 70, 70, 0.9);
     padding: 5px;
+
     div {
         color: white;
     }
@@ -134,5 +149,6 @@ body {
     top: 0;
     left: 0;
     height: 100%;
-    width: 10%;
+    width: 12%;
+    z-index: 99;
 }
