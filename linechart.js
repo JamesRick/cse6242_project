@@ -87,11 +87,15 @@ async function drawLineChart(countyData) {
 
         bounds.append("path")
             .attr("d", lineGenerator(
-                el.data.preds.filter(el => 
+                el.data.preds.filter(el =>
                     LC_dateParser(el.date) >= LC_dateParser(selectedDate())
                 )
             ))
-        
+            .attr("fill", "none")
+            .attr("stroke", color_array[countyNames.indexOf(el.name)])
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "7, 5");
+
         // TODO: Do we want little dots with a tooltip that shows the price? 
         // bounds.selectAll("circle")
         //     .data(el.data.actual)
@@ -101,7 +105,7 @@ async function drawLineChart(countyData) {
         //     .attr("cx", (d) => LC_xScale(LC_xAccessor(d)))
         //     .attr("cy", (d) => LC_yScale(LC_yAccessor(d)))
         //     .attr("fill", color_array[countyNames.indexOf(el.name)])
-        
+
     });
 
     //8. Create X axis and Y axis
