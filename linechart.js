@@ -74,12 +74,12 @@ async function drawLineChart(countyData) {
         .curve(d3.curveBasis);
 
     // 7. Convert X and Y into Path
-    dataset.forEach((ds) => {
+    dataset.forEach((ds, idx) => {
         const line = bounds
             .append("path")
             .attr("d", lineGenerator(ds))
             .attr("fill", "none")
-            .attr("stroke", "Red")
+            .attr("stroke", color_array[idx])
             .attr("stroke-width", 2);
     });
 
