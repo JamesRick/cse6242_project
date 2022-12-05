@@ -13,7 +13,9 @@ var width = parseInt(d3.select(".viz").style("width")),
     selectedCounties = new Set(),
     tip = getTip(),
     counties__,
-    countyNames;
+    countyNames,
+    zillow_map,
+    preds_map;
 
 var zoom = d3
     .zoom()
@@ -83,7 +85,6 @@ var quantileScale = d3.scaleQuantile().range(colors); // These can be change to 
 
 var date_slider = d3.sliderBottom();
 
-var zillow_map;
 Promise.all([
     d3.json("maps/us-topo.less.min.json"),
     d3.json("maps/GA-13-georgia-counties.min.json"),
@@ -167,19 +168,25 @@ Promise.all([
         .enter()
         .append("option")
         .text((d) => d.displayName)
-        .attr("value", (d) => d.path);
+        .attr("value", (d) => d.path)
+        .attr("preds", d => d.preds)
 
     d3.select("#data-select").on("change", function () {
-        let path = this.options[this.selectedIndex].value;
+        let path = this.options[this.selectedIndex].getAttribute("value");
+        let pred_path = this.options[this.selectedIndex].getAttribute("preds");
+        if (LOG_LEVEL == "DEBUG") console.log(this.options[this.selectedIndex])
         d3.select(".center-container").selectAll("g").remove();
-        redrawData(georgia, path);
+        redrawData(georgia, path, pred_path);
     });
 
-    redrawData(georgia, index[0].path);
+    redrawData(georgia, index[0].path, index[0].preds);
 });
 
-function redrawData(georgia, dataPath) {
-    d3.csv(dataPath).then((zillow_data) => {
+function redrawData(georgia, dataPath, predsPath) {
+    Promise.all([
+        d3.csv(dataPath), 
+        d3.csv(predsPath)
+    ]).then(([zillow_data, zillow_preds]) => {
         /**
          * Slider code below
          */
@@ -195,6 +202,8 @@ function redrawData(georgia, dataPath) {
             .key((e) => e.RegionName.replace(" County", ""))
             .entries(zillow_data);
         zillow_map = flatten_nest(zillow_nest);
+
+        preds_map = parse_preds(zillow_preds); 
 
         var date_entries = new Set();
         var date_entries_str = new Set();
@@ -279,8 +288,8 @@ function ready(error, georgia, zillow_data) {
         cur_date = selectedDate();
 
         // if (LOG_LEVEL == "DEBUG") console.log(cur_date);
-        vert_stroke(cur_date);
-
+        // vert_stroke(cur_date);
+        refreshLineChart();
         // Color map with currently selected dates data.
         colorMap(georgia, zillow_data, cur_date);
     });

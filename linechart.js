@@ -1,4 +1,10 @@
-var LC_xScale, LC_yScale, dimensions, LC_xAccessor, LC_yAccessor, LC_dateParser;
+var LC_xScale, 
+    LC_yScale, 
+    dimensions, 
+    LC_xAccessor, 
+    LC_yAccessor, 
+    LC_dateParser, 
+    LC_bounds;
 
 async function drawLineChart(countyData) {
     //1. Load your Dataset
@@ -52,7 +58,7 @@ async function drawLineChart(countyData) {
     //console.log(wrapper);
 
     // 4. Create a Bounding Box
-    const bounds = wrapper
+    LC_bounds = wrapper
         .append("g")
         .attr("width", dimensions.boundedWidth)
         .attr("height", dimensions.boundedHeight)
@@ -79,22 +85,20 @@ async function drawLineChart(countyData) {
 
     // 7. Convert X and Y into Path
     countyData.forEach(el => {
-        bounds.append("path")
+        LC_bounds.append("path")
             .attr("d", lineGenerator(el.data.actual))
             .attr("fill", "none")
             .attr("stroke", color_array[countyNames.indexOf(el.name)])
             .attr("stroke-width", 2);
 
-        bounds.append("path")
-            .attr("d", lineGenerator(
-                el.data.preds.filter(el =>
-                    LC_dateParser(el.date) >= LC_dateParser(selectedDate())
-                )
-            ))
+        if (el.data.preds != undefined) {
+            LC_bounds.append("path")
+            .attr("d", lineGenerator(el.data.preds))
             .attr("fill", "none")
             .attr("stroke", color_array[countyNames.indexOf(el.name)])
             .attr("stroke-width", 2)
-            .attr("stroke-dasharray", "7, 5");
+            .attr("stroke-dasharray", "4, 2");
+        } 
 
         // TODO: Do we want little dots with a tooltip that shows the price? 
         // bounds.selectAll("circle")
@@ -111,11 +115,11 @@ async function drawLineChart(countyData) {
     //8. Create X axis and Y axis
     // Generate Y Axis
     const yAxisGenerator = d3.axisLeft().scale(LC_yScale);
-    const yAxis = bounds.append("g").call(yAxisGenerator);
+    const yAxis = LC_bounds.append("g").call(yAxisGenerator);
 
     // Generate X Axis
     const xAxisGenerator = d3.axisBottom().scale(LC_xScale);
-    const xAxis = bounds
+    const xAxis = LC_bounds
         .append("g")
         .call(xAxisGenerator.tickFormat(d3.timeFormat("%Y-%m-%d")))
         .style("transform", `translateY(${dimensions.boundedHeight}px)`)
@@ -137,5 +141,5 @@ async function drawLineChart(countyData) {
         .style("font-size", "15px")
         .style("text-decoration", "underline");
 
-    vert_stroke(selectedDate());
+    // vert_stroke(selectedDate());
 }

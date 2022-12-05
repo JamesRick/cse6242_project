@@ -110,6 +110,9 @@ function getTip() {
 
 function getDataForCounty(countyMap, countyName) {
     let allCountyValues = countyMap[countyName];
+    if (allCountyValues == undefined) {
+        return [];
+    }
     let formatted = Object.keys(allCountyValues)
         .filter((k) => Date.parse(k))
         .filter((k) => k != 'Unnamed: 0')
@@ -120,6 +123,10 @@ function getDataForCounty(countyMap, countyName) {
         .filter(o => o.value > 0);
 
     return formatted;
+}
+
+function getPredForCounty(cmap, countyName, startDate) {
+    return cmap[countyName]?.[startDate]; 
 }
 
 function vert_stroke(cur_date) {
@@ -140,8 +147,41 @@ function refreshLineChart() {
         data: {
             actual: getDataForCounty(zillow_map, e),
             // TODO: replace this with the real values
-            preds: getDataForCounty({ [e]: {} }, e)
+            preds: getPredForCounty(preds_map, e, selectedDate())
         }
     }));
     drawLineChart(linedata);
+    vert_stroke(selectedDate());
+}
+
+function date_inc(original_date) {
+    let new_date = new Date(original_date);
+    new_date.setUTCMonth(original_date.getUTCMonth() + 1);
+    return new_date;
+}
+
+function parse_preds(preds_raw) {
+    let preds_nest = d3.nest()
+        .key(k => k.County)
+        .key(k => k.Date)
+        .entries(preds_raw);
+    preds = flatten_nest(preds_nest)
+
+    var final_obj = {};
+    Object.keys(preds).forEach(el => {
+        final_obj[el] = {};
+        Object.keys(preds[el]).forEach(start_date_str => {
+            final_obj[el][start_date_str] = [];
+            var next_date = new Date(start_date_str);
+            for (var i = 0, j = 1; i < 12; i++, j++) {
+                var next_date = date_inc(next_date);
+                var next_date_str = next_date.toISOString().split('T')[0];
+                final_obj[el][start_date_str].push({
+                    date: next_date_str,
+                    value: preds[el][start_date_str][`Pred_${j}`]
+                });
+            }
+        });
+    });
+    return final_obj;
 }

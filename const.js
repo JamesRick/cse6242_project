@@ -9,7 +9,7 @@ const margin = {
  * LOG_LEVEL for controlling console.log output.
  * valid values: "RELEASE", "DEBUG".
  */
-const LOG_LEVEL = "DEBUG";
+const LOG_LEVEL = "RELEASE";
 
 const index_path = "zillow_data/index.json";
 const date_re = new RegExp("[0-9]+-[0-9]+-[0-9]+");
