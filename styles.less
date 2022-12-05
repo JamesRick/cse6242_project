@@ -6,7 +6,7 @@
 @light-blue-shadow: #EEFBFB;
 
 body {
-    // overflow: hidden;
+    overflow: hidden;
 }
 
 .label {
@@ -19,18 +19,13 @@ body {
     z-index: 999;
 }
 
-.area-sidebar {
-    overflow-y: auto;
-    padding: 10px 10px 10px 10px;
-
-    label {
-        color: rgb(255, 255, 255);
-    }
-}
-
 #data-select {
-    width: 100%;
-    margin-bottom: 7px;
+    // left: 12%;
+    width: 20%;
+    margin: auto;
+    // margin-bottom: 7px;
+    // margin-left: 40%;
+    // margin-right: 40%;
 }
 
 .page-body {
@@ -46,7 +41,6 @@ body {
     position: relative;
     width: 80%;
     top: 60px;
-    left: -2.5%;
     vertical-align: top;
     /* overflow: hidden; */
 }
@@ -123,13 +117,14 @@ body {
 }
 
 .area-top {
-    display: inline-block;
+    display: inline-grid;
     position: fixed;
     background-color: @dark-blue-shadow;
     top: 0;
-    left: 0;
+    left: 12%;
     height: 40px;
-    width: 100%;
+    width: 88%;
+    align-content: center;
 }
 
 .area-bottom {
@@ -151,4 +146,14 @@ body {
     height: 100%;
     width: 12%;
     z-index: 99;
+    overflow-y: auto;
+    padding: 10px 10px 10px 10px;
+
+    label, .head {
+        color: rgb(255, 255, 255);
+    }
+    .head {
+        align-self: center;
+        margin-top: 4px;
+    }
 }

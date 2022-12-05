@@ -1,32 +1,27 @@
-var LC_xScale, 
-    LC_yScale, 
-    dimensions, 
-    LC_xAccessor, 
-    LC_yAccessor, 
-    LC_dateParser, 
+var LC_xScale,
+    LC_yScale,
+    dimensions,
+    LC_xAccessor,
+    LC_yAccessor,
+    LC_dateParser,
     LC_bounds;
 
 async function drawLineChart(countyData) {
-    //1. Load your Dataset
     d3.select("#line-chart").remove();
-    // need to select the map version -> county -> filter by date
-    // const dataset = await d3.csv("Book1.csv");
-    // const dataset = countyData.map(l => l.filter(o => o.value > 0));
-    const data_only = countyData.map(l => l.data.actual);
-    // console.log("drawLineChart", "dataset:", dataset);
-
-    //Check the sample values available in the dataset
-    //console.table(dataset[0]);
 
     LC_yAccessor = (d) => d.value;
     LC_dateParser = d3.timeParse("%Y-%m-%d");
     LC_xAccessor = (d) => LC_dateParser(d.date);
 
-    //Check the value of xAccessor function now
-    // console.log(xAccessor(dataset[0]));
+    var data_only = [
+        ...countyData.flatMap(l => l.data.actual),
+        ...countyData.flatMap(l => l.data.preds || []),
+    ];
 
-    // 2. Create a chart dimension by defining the size of the Wrapper and Margin
-    // console.log("drawLineChart", "svg", svg)
+    if (LOG_LEVEL == "DEBUG") {
+        console.log(countyData);
+        console.log(data_only);
+    }
 
     dimensions = {
         width: 650,
@@ -43,7 +38,7 @@ async function drawLineChart(countyData) {
     dimensions.boundedHeight =
         dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
 
-    // 3. Draw Canvas
+    
     const wrapper = d3
         .select(".viz")
         .append("svg")
@@ -54,10 +49,6 @@ async function drawLineChart(countyData) {
             `${0} ${0} ${dimensions.width} ${dimensions.height}`
         );
 
-    //Log our new Wrapper Variable to the console to see what it looks like
-    //console.log(wrapper);
-
-    // 4. Create a Bounding Box
     LC_bounds = wrapper
         .append("g")
         .attr("width", dimensions.boundedWidth)
@@ -65,25 +56,22 @@ async function drawLineChart(countyData) {
         .attr("id", "line-container")
         .attr("transform", `translate(${dimensions.margin.left},${dimensions.margin.top})`);
 
-    // 5. Define Domain and Range for Scales
     LC_yScale = d3
         .scaleLinear()
-        .domain(d3.extent(data_only.flat(), LC_yAccessor))
+        .domain(d3.extent(data_only, LC_yAccessor))
         .range([dimensions.boundedHeight, 0]);
 
     LC_xScale = d3
         .scaleTime()
-        .domain(d3.extent(data_only.flat(), LC_xAccessor))
+        .domain(d3.extent(data_only, LC_xAccessor))
         .range([0, dimensions.boundedWidth]);
 
-    //6. Convert a datapoints into X and Y value
     const lineGenerator = d3
         .line()
         .x((d) => LC_xScale(LC_xAccessor(d)))
         .y((d) => LC_yScale(LC_yAccessor(d)))
         .curve(d3.curveBasis);
 
-    // 7. Convert X and Y into Path
     countyData.forEach(el => {
         LC_bounds.append("path")
             .attr("d", lineGenerator(el.data.actual))
@@ -92,13 +80,17 @@ async function drawLineChart(countyData) {
             .attr("stroke-width", 2);
 
         if (el.data.preds != undefined) {
+            var line_data = el.data.preds;
+            if (selectedDate() == el.data.actual[el.data.actual.length - 1].date) {
+                line_data = [el.data.actual[el.data.actual.length - 1], ...line_data];
+            }
             LC_bounds.append("path")
-            .attr("d", lineGenerator(el.data.preds))
-            .attr("fill", "none")
-            .attr("stroke", color_array[countyNames.indexOf(el.name)])
-            .attr("stroke-width", 2)
-            .attr("stroke-dasharray", "4, 2");
-        } 
+                .attr("d", lineGenerator(line_data))
+                .attr("fill", "none")
+                .attr("stroke", color_array[countyNames.indexOf(el.name)])
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "4, 2");
+        }
 
         // TODO: Do we want little dots with a tooltip that shows the price? 
         // bounds.selectAll("circle")
@@ -112,12 +104,9 @@ async function drawLineChart(countyData) {
 
     });
 
-    //8. Create X axis and Y axis
-    // Generate Y Axis
     const yAxisGenerator = d3.axisLeft().scale(LC_yScale);
     const yAxis = LC_bounds.append("g").call(yAxisGenerator);
 
-    // Generate X Axis
     const xAxisGenerator = d3.axisBottom().scale(LC_xScale);
     const xAxis = LC_bounds
         .append("g")
@@ -128,7 +117,6 @@ async function drawLineChart(countyData) {
         .attr("dy", `.20em`)
         .attr("transform", `translate(${-5},${20}) rotate(-45)`);
 
-    //9. Add a Chart Header
     wrapper
         .append("g")
         .style("transform", `translate(${50}px,${15}px)`)
@@ -141,5 +129,4 @@ async function drawLineChart(countyData) {
         .style("font-size", "15px")
         .style("text-decoration", "underline");
 
-    // vert_stroke(selectedDate());
 }

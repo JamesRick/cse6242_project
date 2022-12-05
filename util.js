@@ -178,7 +178,7 @@ function parse_preds(preds_raw) {
                 var next_date_str = next_date.toISOString().split('T')[0];
                 final_obj[el][start_date_str].push({
                     date: next_date_str,
-                    value: preds[el][start_date_str][`Pred_${j}`]
+                    value: parseFloat(preds[el][start_date_str][`Pred_${j}`])
                 });
             }
         });
